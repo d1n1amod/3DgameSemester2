@@ -41,7 +41,7 @@ public class TimerScript : MonoBehaviour
 
     private IEnumerator WaitForDeath()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
