@@ -7,8 +7,8 @@ public class EnemyMovement : MonoBehaviour
 {
     [Header("Player Detection")]
     public Transform target;               
-    public float detectionRadius = 20f;    
-    public float runDistance = 15f;        
+    public float detectionRadius = 30f;    
+    public float runDistance = 20f;        
 
     [Header("Wandering")]
     public float wanderRadius = 20f;       
