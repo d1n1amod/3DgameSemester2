@@ -5,28 +5,88 @@ using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public Transform target;
-    public float UpdateSpeed = 0.1f; // how frequently to recalculate path based on Target transform's position
+    [Header("Player Detection")]
+    public Transform target;               
+    public float detectionRadius = 20f;    
+    public float runDistance = 15f;        
 
-    private NavMeshAgent Agent;
+    [Header("Wandering")]
+    public float wanderRadius = 20f;       
+    public float wanderInterval = 3f;     
+
+    private NavMeshAgent agent;
+    private Coroutine wanderRoutine;
+    private bool isRunningAway = false;
 
     private void Awake()
     {
-        Agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
     {
-        StartCoroutine(FollowedTarget());
+        // Start wandering by default
+        wanderRoutine = StartCoroutine(Wander());
     }
 
-    private IEnumerator FollowedTarget()
+    private void Update()
     {
-        WaitForSeconds wait = new WaitForSeconds(UpdateSpeed);
+        float distanceToPlayer = Vector3.Distance(transform.position, target.position);
 
-        while (enabled)
+        if (distanceToPlayer <= detectionRadius && !isRunningAway)
         {
-            Agent.SetDestination(target.transform.position);
+           
+            if (wanderRoutine != null)
+            {
+                StopCoroutine(wanderRoutine);
+                wanderRoutine = null;
+            }
+
+            StartCoroutine(RunAwayAndResume());
+        }
+    }
+
+    private IEnumerator RunAwayAndResume()
+    {
+        isRunningAway = true;
+
+        Vector3 dirToPlayer = transform.position - target.position; 
+        Vector3 runPosition = transform.position + dirToPlayer.normalized * runDistance;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(runPosition, out hit, runDistance, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+
+        // Wait until enemy reaches the run position (or almost there)
+        while (agent.pathPending || agent.remainingDistance > 0.5f)
+        {
+            yield return null;
+        }
+
+        
+        isRunningAway = false;
+        if (wanderRoutine == null)
+        {
+            wanderRoutine = StartCoroutine(Wander());
+        }
+    }
+
+    private IEnumerator Wander()
+    {
+        WaitForSeconds wait = new WaitForSeconds(wanderInterval);
+
+        while (true)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
+            randomDirection += transform.position;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+            }
 
             yield return wait;
         }
