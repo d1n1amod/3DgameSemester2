@@ -68,30 +68,6 @@ public class FPController : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
-
-    public void OnShoot(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Shoot();
-        }    
-    }
-
-    private void Shoot()
-    {
-        if (bulletPrefab != null && gunPoint != null)
-        {
-            GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, gunPoint.rotation);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
-            if (rb != null)
-            {
-                rb.AddForce(gunPoint.forward * 1000f);
-                Destroy(bullet, 3);
-            }
-        }
-    }
-
     public void OnCrouch(InputAction.CallbackContext context)
     {
         if (context.performed)

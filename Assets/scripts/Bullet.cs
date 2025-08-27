@@ -1,16 +1,30 @@
-using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
-    {
-        PlayerInventory playerInventory = other.GetComponent<PlayerInventory>();
+    public float damage = 20f;
+    public float lifetime = 3f;
 
-        if (playerInventory != null )
+    void Start()
+    {
+        Destroy(gameObject, lifetime); // auto destroy
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Check enemy health on the object or its parent
+        EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
+        if (enemy == null)
         {
-            playerInventory.BulletCollected();
-            gameObject.SetActive(false);
+            enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
         }
+
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+            Debug.Log("Hit enemy! Damage applied: " + damage);
+        }
+
+        Destroy(gameObject); // destroy bullet on any hit
     }
 }
