@@ -14,11 +14,25 @@ public class TimerScript : MonoBehaviour
     void Awake()
     {
         remianingTime = 60;
+        StartTimer = false; // Don't start immediately
+
+        // Hide the timer at the start
+        timerText.gameObject.SetActive(false);
+
+        StartCoroutine(StartTimerAfterDelay());
+    }
+
+    private IEnumerator StartTimerAfterDelay()
+    {
+        yield return new WaitForSeconds(30f); // wait 30 seconds
+
+        // Show the timer and start counting
+        timerText.gameObject.SetActive(true);
         StartTimer = true;
     }
     public void Update()
     {
-        if (StartTimer == true)
+        if (StartTimer)
         {
             if (remianingTime > 0)
             {
