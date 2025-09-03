@@ -4,41 +4,67 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Settings")]
-    public GameObject enemyPrefab;         // Enemy prefab
-    public List<Transform> spawnPoints;    // Positions where enemies will appear
-    public float dropHeight = 15f;         // How high above spawn point they drop from
+    public GameObject[] capsulePrefabs; 
+    public float spawnInterval = 2f;
+    public Vector2 spawnRangeX = new Vector2(-10, 10);
+    public Vector2 spawnRangeZ = new Vector2(-10, 10);
+    public float spawnY = 5f;
+    public int maxEnemies = 4;
 
-    [Header("References")]
-    public TimerScript timerScript;        // Reference to your timer script
+    private int enemiesSpawned = 0;
+    private Transform player;
+    private TimerScript timerScript; 
 
-    private bool enemiesSpawned = false;
-
-    private void Update()
+    void Start()
     {
-        // When timer starts and enemies not yet spawned
-        if (timerScript.StartTimer && !enemiesSpawned)
+        
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
         {
-            SpawnEnemies();
-            enemiesSpawned = true;
+            player = playerObj.transform;
         }
+
+        
+        timerScript = FindObjectOfType<TimerScript>();
+
+       
+        StartCoroutine(WaitForTimerAndSpawn());
     }
 
-    private void SpawnEnemies()
+    IEnumerator WaitForTimerAndSpawn()
     {
-        foreach (Transform point in spawnPoints)
+        
+        while (timerScript != null && !timerScript.StartTimer)
         {
-            Vector3 spawnPos = point.position + Vector3.up * dropHeight;
-            GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+            yield return null; 
+        }
 
-            // Add gravity effect (so they fall down naturally)
-            Rigidbody rb = enemy.GetComponent<Rigidbody>();
-            if (rb == null)
+        yield return StartCoroutine(SpawnEnemies());
+    }
+
+    IEnumerator SpawnEnemies()
+    {
+        while (enemiesSpawned < maxEnemies)
+        {
+            int randomIndex = Random.Range(0, capsulePrefabs.Length);
+
+            Vector3 randomSpawnPosition = new Vector3(
+                Random.Range(spawnRangeX.x, spawnRangeX.y),
+                spawnY,
+                Random.Range(spawnRangeZ.x, spawnRangeZ.y)
+            );
+
+            GameObject enemy = Instantiate(capsulePrefabs[randomIndex], randomSpawnPosition, Quaternion.identity);
+
+          
+            EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
+            if (movement != null && player != null)
             {
-                rb = enemy.AddComponent<Rigidbody>();
+                movement.target = player;
             }
 
-            rb.useGravity = true;
+            enemiesSpawned++;
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 }

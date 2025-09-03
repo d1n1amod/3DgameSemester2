@@ -20,12 +20,25 @@ public class EnemyMovement : MonoBehaviour
 
     private void Awake()
     {
+        if (target == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                target = playerObj.transform;
+            }
+            else
+            {
+                Debug.LogWarning("EnemyMovement: No GameObject with tag 'Player' found!");
+            }
+        }
+
         agent = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
     {
-        // Start wandering by default
+       
         wanderRoutine = StartCoroutine(Wander());
     }
 
@@ -59,7 +72,7 @@ public class EnemyMovement : MonoBehaviour
             agent.SetDestination(hit.position);
         }
 
-        // Wait until enemy reaches the run position (or almost there)
+        
         while (agent.pathPending || agent.remainingDistance > 0.5f)
         {
             yield return null;
