@@ -34,6 +34,13 @@ public class FPController : MonoBehaviour
     public Transform holdPoint;
     private PickUpObject heldObject;
 
+    [Header("Interaction Settings")]
+    public float interactRange = 3f;
+    [SerializeField] private InteractionUI interactionUI;
+
+    private Interactable currentInteractable;
+
+
     private CharacterController controller;
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -63,6 +70,32 @@ public class FPController : MonoBehaviour
     {
         playerInventory = GetComponent<PlayerInventory>();
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var interactable = other.GetComponent<Interactable>();
+        if (interactable != null)
+        {
+            currentInteractable = interactable;
+            interactionUI.ShowMessage(interactable.interactionMessage);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        var interactable = other.GetComponent<Interactable>();
+        if (interactable != null && interactable == currentInteractable)
+        {
+            currentInteractable = null;
+            interactionUI.HideMessage();
+
+            if (interactable.panelToOpen != null)
+            {
+                interactable.panelToOpen.SetActive(false);
+                Debug.Log("Closed panel from: " + interactable.name);
+            }
+        }
     }
     public void OnMovement(InputAction.CallbackContext context)
     {
@@ -151,6 +184,22 @@ public class FPController : MonoBehaviour
         {
             heldObject.Drop();
             heldObject = null;
+        }
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        if (currentInteractable != null)
+        {
+            interactionUI.HideMessage();
+
+            if (currentInteractable.panelToOpen != null)
+            {
+                currentInteractable.panelToOpen.SetActive(true);
+                Debug.Log("Opened panel from: " + currentInteractable.name);
+            }
         }
     }
 
