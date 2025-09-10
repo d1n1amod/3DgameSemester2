@@ -21,6 +21,8 @@ public class FPController : MonoBehaviour
     public Transform shootPoint;     // Empty GameObject at gun barrel
     public float bulletForce = 50f;
 
+    private PlayerInventory playerInventory;
+
     [Header("Crouch Settings")]
     public float crouchHeight = 1f;
     public float standHeight = 2f;
@@ -56,6 +58,12 @@ public class FPController : MonoBehaviour
             heldObject.MoveToHoldPoint(holdPoint.position);
         }
     }
+
+    private void Start()
+    {
+        playerInventory = GetComponent<PlayerInventory>();
+
+    }
     public void OnMovement(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -83,19 +91,28 @@ public class FPController : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(shootPoint.forward * bulletForce, ForceMode.Impulse);
-
-        RaycastHit hit;
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        if (playerInventory != null && playerInventory.UseBullet())
         {
-            EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+            // Spawn bullet
+            GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            rb.AddForce(shootPoint.forward * bulletForce, ForceMode.Impulse);
 
-            if (enemy != null)
+            // Raycast hit detection
+            RaycastHit hit;
+            if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
             {
-                enemy.TakeDamage(damage);
+                EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                }
             }
+        }
+        else
+        {
+            Debug.Log("No ammo!");
         }
     }
 
