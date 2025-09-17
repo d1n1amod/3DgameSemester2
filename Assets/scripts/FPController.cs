@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 public class FPController : MonoBehaviour
 {
     [Header("Movement Settings")]
@@ -39,6 +40,9 @@ public class FPController : MonoBehaviour
     [SerializeField] private InteractionUI interactionUI;
 
     private Interactable currentInteractable;
+
+    [Header("Pause Menu Settings")]
+    [SerializeField] GameObject pauseMenu;
 
 
     private CharacterController controller;
@@ -202,6 +206,13 @@ public class FPController : MonoBehaviour
             }
         }
     }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0;
+    }
+
 
 
     public void HandleMovement()
