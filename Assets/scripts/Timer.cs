@@ -14,9 +14,9 @@ public class TimerScript : MonoBehaviour
     void Awake()
     {
         remianingTime = 60;
-        StartTimer = false; // Don't start immediately
+        StartTimer = false; 
 
-        // Hide the timer at the start
+      
         timerText.gameObject.SetActive(false);
 
         StartCoroutine(StartTimerAfterDelay());
@@ -24,9 +24,7 @@ public class TimerScript : MonoBehaviour
 
     private IEnumerator StartTimerAfterDelay()
     {
-        yield return new WaitForSeconds(30f); // wait 30 seconds
-
-        // Show the timer and start counting
+        yield return new WaitForSeconds(30f); 
         timerText.gameObject.SetActive(true);
         StartTimer = true;
     }
@@ -41,7 +39,7 @@ public class TimerScript : MonoBehaviour
             else if (remianingTime <= 0)
             {
                 remianingTime = 0;
-                // GameOver();
+               
                 timerText.color = Color.red;
                 StartTimer = false;
                 StartCoroutine(WaitForDeath());
