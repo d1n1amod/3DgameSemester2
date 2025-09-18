@@ -15,13 +15,22 @@ public class FPController : MonoBehaviour
 
     [Header("Shooting")]
     public GameObject bulletPrefab;
-    public Transform gunPoint;
+    public Camera fpsCam;         // Camera used for raycasting
+    public float damage = 20f;    // Damage dealt to enemy
+    public float range = 100f;    // Range of shooting
+    public Transform shootPoint;     // Empty GameObject at gun barrel
+    public float bulletForce = 50f;
 
     [Header("Crouch Settings")]
     public float crouchHeight = 1f;
     public float standHeight = 2f;
     public float crouchSpeed = 2.5f;
     private float originalMoveSpeed;
+
+    [Header("Pickup Settings")]
+    public float pickupRange = 3f;
+    public Transform holdPoint;
+    private PickUpObject heldObject;
 
     private CharacterController controller;
     private Vector2 moveInput;
@@ -41,6 +50,11 @@ public class FPController : MonoBehaviour
     {
         HandleMovement();
         HandleLook();
+
+        if (heldObject != null)
+        {
+            heldObject.MoveToHoldPoint(holdPoint.position);
+        }
     }
     public void OnMovement(InputAction.CallbackContext context)
     {
@@ -64,20 +78,23 @@ public class FPController : MonoBehaviour
         if (context.performed)
         {
             Shoot();
-        }    
+        }
     }
 
     private void Shoot()
     {
-        if (bulletPrefab != null && gunPoint != null)
-        {
-            GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, gunPoint.rotation);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.AddForce(shootPoint.forward * bulletForce, ForceMode.Impulse);
 
-            if (rb != null)
+        RaycastHit hit;
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        {
+            EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+
+            if (enemy != null)
             {
-                rb.AddForce(gunPoint.forward * 1000f);
-                Destroy(bullet, 3);
+                enemy.TakeDamage(damage);
             }
         }
     }
@@ -96,7 +113,31 @@ public class FPController : MonoBehaviour
         }
     }
 
-    
+    public void OnPickUp(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        if (heldObject == null)
+        {
+            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, pickupRange))
+            {
+                PickUpObject pickUp = hit.collider.GetComponent<PickUpObject>();
+                if (pickUp != null)
+                {
+                    pickUp.PickUp(holdPoint);
+                    heldObject = pickUp;
+                }
+            }
+        }
+        else
+        {
+            heldObject.Drop();
+            heldObject = null;
+        }
+    }
+
+
     public void HandleMovement()
     {
         Vector3 move = transform.right * moveInput.x + transform.forward *
