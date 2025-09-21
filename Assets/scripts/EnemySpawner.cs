@@ -4,67 +4,47 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject[] capsulePrefabs; 
-    public float spawnInterval = 2f;
-    public Vector2 spawnRangeX = new Vector2(-10, 10);
-    public Vector2 spawnRangeZ = new Vector2(-10, 10);
-    public float spawnY = 5f;
-    public int maxEnemies = 4;
+    [Header("Enemy Prefab")]
+    [Tooltip("Drag the enemy capsule prefab here")]
+    public GameObject enemyPrefab;
 
-    private int enemiesSpawned = 0;
-    private Transform player;
-    private TimerScript timerScript; 
+    [Header("Spawn Settings")]
+    public float spawnDelay = 0f;    // delay before this spawner spawns
+    public float spawnRadius = 15f;  // random spawn radius around the spawner
+
+    private TimerScript timerScript;
+    private bool hasSpawned = false;
 
     void Start()
     {
-        
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-
-        
         timerScript = FindObjectOfType<TimerScript>();
-
-       
-        StartCoroutine(WaitForTimerAndSpawn());
+        StartCoroutine(WaitAndSpawn());
     }
 
-    IEnumerator WaitForTimerAndSpawn()
+    IEnumerator WaitAndSpawn()
     {
-        
+        // Wait until timer starts
         while (timerScript != null && !timerScript.StartTimer)
         {
-            yield return null; 
+            yield return null;
         }
 
-        yield return StartCoroutine(SpawnEnemies());
-    }
+        // Wait for this spawner's individual delay
+        yield return new WaitForSeconds(spawnDelay);
 
-    IEnumerator SpawnEnemies()
-    {
-        while (enemiesSpawned < maxEnemies)
+        // Spawn the enemy if not already spawned
+        if (!hasSpawned && enemyPrefab != null)
         {
-            int randomIndex = Random.Range(0, capsulePrefabs.Length);
-
+            Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
             Vector3 randomSpawnPosition = new Vector3(
-                Random.Range(spawnRangeX.x, spawnRangeX.y),
-                spawnY,
-                Random.Range(spawnRangeZ.x, spawnRangeZ.y)
+                transform.position.x + randomCircle.x,
+                5, // Y position
+                transform.position.z + randomCircle.y
             );
 
-            GameObject enemy = Instantiate(capsulePrefabs[randomIndex], randomSpawnPosition, Quaternion.identity);
-
-          
-            EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
-            if (movement != null && player != null)
-            {
-                movement.target = player;
-            }
-
-            enemiesSpawned++;
-            yield return new WaitForSeconds(spawnInterval);
+            Instantiate(enemyPrefab, randomSpawnPosition, Quaternion.identity);
+            hasSpawned = true; // ensure it only spawns once
         }
     }
 }
+

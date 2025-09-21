@@ -13,7 +13,7 @@ public class TimerScript : MonoBehaviour
 
     void Awake()
     {
-        remianingTime = 60;
+        remianingTime = 90;
         StartTimer = false; 
 
       
@@ -24,7 +24,7 @@ public class TimerScript : MonoBehaviour
 
     private IEnumerator StartTimerAfterDelay()
     {
-        yield return new WaitForSeconds(30f); 
+        yield return new WaitForSeconds(60f); 
         timerText.gameObject.SetActive(true);
         StartTimer = true;
     }
