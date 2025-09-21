@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class EnemyMovement : MonoBehaviour
 {
     [Header("Player Detection")]
+    [Tooltip("Assign the Player object here, or leave empty to auto-find by tag.")]
     public Transform target;               
     public float detectionRadius = 30f;    
     public float runDistance = 20f;        
@@ -29,7 +30,7 @@ public class EnemyMovement : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("EnemyMovement: No GameObject with tag 'Player' found!");
+                Debug.LogWarning($"{name}: EnemyMovement has no Player target assigned and no GameObject with tag 'Player' found!");
             }
         }
 
@@ -44,6 +45,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
+        if (target == null) return;
         float distanceToPlayer = Vector3.Distance(transform.position, target.position);
 
         if (distanceToPlayer <= detectionRadius && !isRunningAway)
