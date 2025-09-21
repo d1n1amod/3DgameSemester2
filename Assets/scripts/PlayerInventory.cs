@@ -8,12 +8,15 @@ public class PlayerInventory : MonoBehaviour
 
     public UnityEvent<PlayerInventory> OnBulletChanged;
 
-    public void BulletCollected()
-    {
-        // each tomato gives 3 bullets
-        NumberOfBullets += 3;
 
+    public UnityEvent<string> OnItemCollected;
+
+    public void BulletCollected()
+    {        
+        NumberOfBullets += 3;
         OnBulletChanged?.Invoke(this);
+
+        OnItemCollected?.Invoke("Tomato Collected");
     }
 
     public bool UseBullet()
