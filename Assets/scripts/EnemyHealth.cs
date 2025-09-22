@@ -30,7 +30,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (healthBar != null)
         {
-            healthBar.value = currentHealth; // update bar
+            healthBar.value = currentHealth; 
         }
         else
         {
