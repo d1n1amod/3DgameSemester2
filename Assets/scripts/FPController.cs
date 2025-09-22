@@ -209,8 +209,13 @@ public class FPController : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
+        if(!context.performed) return;
+
         pauseMenu.SetActive(true);
         Time.timeScale = 0;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
 
@@ -227,6 +232,8 @@ public class FPController : MonoBehaviour
     }
     public void HandleLook()
     {
+        if (pauseMenu.activeSelf) return;
+
         float mouseX = lookInput.x * lookSensitivity;
         float mouseY = lookInput.y * lookSensitivity;
         verticalRotation -= mouseY;
