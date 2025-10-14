@@ -199,11 +199,7 @@ public class FPController : MonoBehaviour
         {
             interactionUI.HideMessage();
 
-            if (currentInteractable.panelToOpen != null)
-            {
-                currentInteractable.panelToOpen.SetActive(true);
-                Debug.Log("Opened panel from: " + currentInteractable.name);
-            }
+            currentInteractable.Interact();
         }
     }
 
