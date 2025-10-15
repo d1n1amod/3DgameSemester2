@@ -51,12 +51,14 @@ public class FPController : MonoBehaviour
     private Vector2 lookInput;
     private Vector3 velocity;
     private float verticalRotation = 0f;
+
+    private bool hasGun = false;
+
     private Animator animator;
 
 
     private void Awake()
     {
-
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -123,6 +125,7 @@ public class FPController : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
+        if (!hasGun) return; // can't shoot without gun 
         if (context.performed)
         {
             Shoot();
@@ -156,6 +159,26 @@ public class FPController : MonoBehaviour
         }
     }
 
+    public void EquipGun(GameObject gunObject)
+    {
+        hasGun = true;
+        gunObject.transform.SetParent(holdPoint);
+        gunObject.transform.localPosition = Vector3.zero;
+        gunObject.transform.localRotation = Quaternion.identity;
+
+        // Disable physics
+        if (gunObject.TryGetComponent<Rigidbody>(out Rigidbody rb))
+        {
+            rb.isKinematic = true;
+        }
+        if (gunObject.TryGetComponent<Collider>(out Collider col))
+        {
+            col.enabled = false;
+        }
+
+        Debug.Log("Gun equipped! Shooting enabled.");
+    }
+
     public void OnCrouch(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -172,25 +195,31 @@ public class FPController : MonoBehaviour
 
     public void OnPickUp(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.performed || hasGun) return;
 
-        if (heldObject == null)
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, pickupRange, ~LayerMask.GetMask("Player"))) // ignore player layer
         {
-            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, pickupRange))
+            Debug.Log("Hit: " + hit.collider.name);
+
+            GunPickUp gun = hit.collider.GetComponent<GunPickUp>();
+            if (gun != null && !gun.isPickedUp)
             {
-                PickUpObject pickUp = hit.collider.GetComponent<PickUpObject>();
-                if (pickUp != null)
-                {
-                    pickUp.PickUp(holdPoint);
-                    heldObject = pickUp;
-                }
+                gun.isPickedUp = true;
+                EquipGun(gun.gameObject);
+                return;
+            }
+
+            PickUpObject pickUp = hit.collider.GetComponent<PickUpObject>();
+            if (pickUp != null)
+            {
+                pickUp.PickUp(holdPoint);
+                heldObject = pickUp;
             }
         }
         else
         {
-            heldObject.Drop();
-            heldObject = null;
+            Debug.Log("Nothing hit");
         }
     }
 
