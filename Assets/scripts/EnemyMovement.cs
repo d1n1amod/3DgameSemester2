@@ -19,6 +19,8 @@ public class EnemyMovement : MonoBehaviour
     private Coroutine wanderRoutine;
     private bool isRunningAway = false;
 
+    private Animator animator;
+
     private void Awake()
     {
         if (target == null)
@@ -35,6 +37,7 @@ public class EnemyMovement : MonoBehaviour
         }
 
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -58,6 +61,12 @@ public class EnemyMovement : MonoBehaviour
             }
 
             StartCoroutine(RunAwayAndResume());
+        }
+
+        if (animator != null)
+        {
+            bool isMoving = agent.velocity.magnitude > 0.1f;
+            animator.SetBool("isMoving", isMoving);
         }
     }
 
