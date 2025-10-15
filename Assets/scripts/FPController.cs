@@ -51,6 +51,10 @@ public class FPController : MonoBehaviour
     private Vector3 velocity;
     private float verticalRotation = 0f;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    private bool isWalking = false;
+
     private void Awake()
     {
 
@@ -73,6 +77,10 @@ public class FPController : MonoBehaviour
     private void Start()
     {
         playerInventory = GetComponent<PlayerInventory>();
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
 
     }
 
@@ -222,9 +230,23 @@ public class FPController : MonoBehaviour
         moveInput.y;
         controller.Move(move * moveSpeed * Time.deltaTime);
         if (controller.isGrounded && velocity.y < 0)
-            velocity.y = -2f;
+        {
+            if (isWalking)
+            {
+                isWalking = false;
+                if (animator)
+                    animator.SetBool("IsWalking", false);
+            }
+
+            if (velocity.y < 0)
+                velocity.y = -2f;
+        }
+            
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+        float speedPercent = new Vector2(moveInput.x, moveInput.y).magnitude;
+        if (animator)
+            animator.SetFloat("Speed",speedPercent,0.1f,Time.deltaTime);
     }
     public void HandleLook()
     {
