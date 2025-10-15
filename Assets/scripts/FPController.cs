@@ -9,6 +9,7 @@ public class FPController : MonoBehaviour
     public float gravity = -9.81f;
     public float jumpHeight = 1.5f;
 
+
     [Header("Look Settings")]
     public Transform cameraTransform;
     public float lookSensitivity = 2f;
@@ -50,10 +51,8 @@ public class FPController : MonoBehaviour
     private Vector2 lookInput;
     private Vector3 velocity;
     private float verticalRotation = 0f;
+    private Animator animator;
 
-    [Header("Animation")]
-    [SerializeField] private Animator animator;
-    private bool isWalking = false;
 
     private void Awake()
     {
@@ -77,11 +76,7 @@ public class FPController : MonoBehaviour
     private void Start()
     {
         playerInventory = GetComponent<PlayerInventory>();
-        if (animator == null)
-        {
-            animator = GetComponentInChildren<Animator>();
-        }
-
+        animator = GetComponentInChildren<Animator>(); // Finds animator in child (character model)
     }
 
     private void OnTriggerEnter(Collider other)
@@ -226,27 +221,19 @@ public class FPController : MonoBehaviour
 
     public void HandleMovement()
     {
-        Vector3 move = transform.right * moveInput.x + transform.forward *
-        moveInput.y;
-        controller.Move(move * moveSpeed * Time.deltaTime);
-        if (controller.isGrounded && velocity.y < 0)
-        {
-            if (isWalking)
-            {
-                isWalking = false;
-                if (animator)
-                    animator.SetBool("IsWalking", false);
-            }
+        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-            if (velocity.y < 0)
-                velocity.y = -2f;
-        }
-            
+        // Calculate movement magnitude (for animation)
+        float moveMagnitude = new Vector2(moveInput.x, moveInput.y).magnitude;
+        animator.SetFloat("Speed", moveMagnitude);
+
+        controller.Move(move * moveSpeed * Time.deltaTime);
+
+        if (controller.isGrounded && velocity.y < 0)
+            velocity.y = -2f;
+
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-        float speedPercent = new Vector2(moveInput.x, moveInput.y).magnitude;
-        if (animator)
-            animator.SetFloat("Speed",speedPercent,0.1f,Time.deltaTime);
     }
     public void HandleLook()
     {
