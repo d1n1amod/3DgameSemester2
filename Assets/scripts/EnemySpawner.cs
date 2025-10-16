@@ -43,7 +43,14 @@ public class EnemySpawner : MonoBehaviour
                 transform.position.z + randomCircle.y
             );
 
-            Instantiate(pigPrefab, randomSpawnPosition, Quaternion.identity);
+            GameObject spawnedPig = Instantiate(pigPrefab, randomSpawnPosition, Quaternion.identity);
+
+            Animator pigAnimator = spawnedPig.GetComponent<Animator>();
+            if (pigAnimator != null)
+            {
+                pigAnimator.SetBool("isMoving", true);
+            }
+
             hasSpawned = true; 
         }
     }
