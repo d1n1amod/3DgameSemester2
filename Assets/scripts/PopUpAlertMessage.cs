@@ -16,13 +16,13 @@ public class PopUpAlertMessage : MonoBehaviour
     public float fadeSpeed = 2f;
 
     [Header("Dependencies")]
-    public TimerScript timerScript; // Reference to your TimerScript
+    public TimerScript timerScript; 
 
     private bool hasShown = false;
 
     void Start()
     {
-        // Make sure text starts invisible
+        
         if (alertText != null)
         {
             Color c = alertText.color;
@@ -30,7 +30,7 @@ public class PopUpAlertMessage : MonoBehaviour
             alertText.color = c;
         }
 
-        // If not manually assigned, find TimerScript in the scene
+        
         if (timerScript == null)
         {
             timerScript = FindObjectOfType<TimerScript>();
@@ -41,13 +41,13 @@ public class PopUpAlertMessage : MonoBehaviour
 
     IEnumerator CheckTimerAndShowAlert()
     {
-        // Wait until the timer starts
+        
         while (timerScript != null && !timerScript.StartTimer)
         {
             yield return null;
         }
 
-        // Once timer starts, show the alert
+        
         if (!hasShown)
         {
             hasShown = true;
@@ -59,10 +59,10 @@ public class PopUpAlertMessage : MonoBehaviour
     {
         if (alertText == null) yield break;
 
-        // Set alert text
+        
         alertText.text =  "ALERT! ALERT! ALERT! ENEMIES ARE HERE";
 
-        // Fade in
+        
         float alpha = 0f;
         while (alpha < 1f)
         {
@@ -73,11 +73,10 @@ public class PopUpAlertMessage : MonoBehaviour
             yield return null;
         }
 
-        // Wait visible for displayDuration seconds
+        
         yield return new WaitForSeconds(displayDuration);
 
-        // Fade out
-        while (alpha > 0f)
+        
         {
             alpha -= Time.deltaTime * fadeSpeed;
             Color c = alertText.color;

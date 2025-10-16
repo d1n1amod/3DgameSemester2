@@ -17,10 +17,10 @@ public class FPController : MonoBehaviour
 
     [Header("Shooting")]
     public GameObject bulletPrefab;
-    public Camera fpsCam;         // Camera used for raycasting
-    public float damage = 20f;    // Damage dealt to enemy
-    public float range = 100f;    // Range of shooting
-    public Transform shootPoint;     // Empty GameObject at gun barrel
+    public Camera fpsCam;         
+    public float damage = 5f;    
+    public float range = 100f;    
+    public Transform shootPoint;     
     public float bulletForce = 50f;
 
     private PlayerInventory playerInventory;
@@ -78,7 +78,7 @@ public class FPController : MonoBehaviour
     private void Start()
     {
         playerInventory = GetComponent<PlayerInventory>();
-        animator = GetComponentInChildren<Animator>(); // Finds animator in child (character model)
+        animator = GetComponentInChildren<Animator>(); 
     }
 
     private void OnTriggerEnter(Collider other)
@@ -125,7 +125,7 @@ public class FPController : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if (!hasGun) return; // can't shoot without gun 
+        if (!hasGun) return; 
         if (context.performed)
         {
             Shoot();
@@ -136,12 +136,12 @@ public class FPController : MonoBehaviour
     {
         if (playerInventory != null && playerInventory.UseBullet())
         {
-            // Spawn bullet
+            
             GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             rb.AddForce(shootPoint.forward * bulletForce, ForceMode.Impulse);
 
-            // Raycast hit detection
+            
             RaycastHit hit;
             if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
             {
@@ -166,7 +166,7 @@ public class FPController : MonoBehaviour
         gunObject.transform.localPosition = Vector3.zero;
         gunObject.transform.localRotation = Quaternion.identity;
 
-        // Disable physics
+        
         if (gunObject.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
             rb.isKinematic = true;
@@ -198,7 +198,7 @@ public class FPController : MonoBehaviour
         if (!context.performed || hasGun) return;
 
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, pickupRange, ~LayerMask.GetMask("Player"))) // ignore player layer
+        if (Physics.Raycast(ray, out RaycastHit hit, pickupRange, ~LayerMask.GetMask("Player"))) 
         {
             Debug.Log("Hit: " + hit.collider.name);
 
@@ -252,7 +252,7 @@ public class FPController : MonoBehaviour
     {
         Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-        // Calculate movement magnitude (for animation)
+        
         float moveMagnitude = new Vector2(moveInput.x, moveInput.y).magnitude;
         animator.SetFloat("Speed", moveMagnitude);
 

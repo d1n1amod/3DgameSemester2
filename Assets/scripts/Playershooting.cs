@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Playershooting : MonoBehaviour
 {
-    public Camera fpsCam;         // Camera used for raycasting
-    public float damage = 20f;    // Damage dealt to enemy
-    public float range = 100f;    // Range of shooting
-    public Transform firePoint;     // Empty GameObject at gun barrel
-    public GameObject bulletPrefab; // Prefab with Rigidbody + Bullet script
+    public Camera fpsCam;         
+    public float damage = 5f;    
+    public float range = 100f;    
+    public Transform firePoint;     
+    public GameObject bulletPrefab; 
     public float bulletForce = 50f;
     void Update()
     {
-        if (Input.GetButtonDown("Fire1")) // Default left-click / Ctrl
+        if (Input.GetButtonDown("Fire1")) 
         {
             Shoot();
         }
