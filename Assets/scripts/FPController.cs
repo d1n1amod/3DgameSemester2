@@ -18,7 +18,7 @@ public class FPController : MonoBehaviour
     [Header("Shooting")]
     public GameObject bulletPrefab;
     public Camera fpsCam;         
-    public float damage = 20f;    
+    public float damage = 5f;    
     public float range = 100f;    
     public Transform shootPoint;     
     public float bulletForce = 50f;
