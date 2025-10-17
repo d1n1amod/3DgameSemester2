@@ -3,7 +3,7 @@ using UnityEngine;
 public class Playershooting : MonoBehaviour
 {
     public Camera fpsCam;         
-    public float damage = 20f;    
+    public float damage = 5f;    
     public float range = 100f;    
     public Transform firePoint;     
     public GameObject bulletPrefab; 
