@@ -18,7 +18,6 @@ public class MainMenu : MonoBehaviour
     {
         controlsMenu.SetActive(false);
         Time.timeScale = 1;
-
        
     }
 
