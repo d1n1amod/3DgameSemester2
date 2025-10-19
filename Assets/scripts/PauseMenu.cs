@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject controlsPanel;
+
 
     public void Pause()
     {
@@ -17,13 +19,20 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void Continue()
+    public void Continue(string sceneName)
     {
+
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void Controls()
+    {
+        controlsPanel.SetActive(true);
+        Time.timeScale = 0;
     }
 
     public void Restart(string sceneName)
