@@ -58,7 +58,7 @@ public class PopUpAlertMessage : MonoBehaviour
     {
         if (alertText == null) yield break;
 
-        alertText.text = "ALERT! ALERT! ALERT! INTRUDERS DETECTED";
+        alertText.text = "ALERT!INTRUDERS DETECTED";
 
         // Fade IN
         float alpha = 0f;

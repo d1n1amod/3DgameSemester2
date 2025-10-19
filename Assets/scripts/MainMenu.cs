@@ -3,23 +3,19 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] GameObject controlsMenu;
     public void Play()
     {
         SceneManager.LoadScene("LoadingScene");
+        Time.timeScale = 1;
     }
 
-    public void Controls()
+    public void Tutorial(string sceneName)
     {
-        controlsMenu.SetActive(true);
-        Time.timeScale = 0;
-    }
-    public void Exit()
-    {
-        controlsMenu.SetActive(false);
+        SceneManager.LoadScene(sceneName);
         Time.timeScale = 1;
-       
+
     }
+        
 
     public void Quit()
     {
