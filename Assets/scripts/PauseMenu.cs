@@ -28,6 +28,7 @@ public class PauseMenu : MonoBehaviour
     public void Continue()
     {
         pauseMenu.SetActive(false);
+        controlsMenu.SetActive(false);
         Time.timeScale = 1;
 
         Cursor.lockState = CursorLockMode.Locked;
