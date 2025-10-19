@@ -8,6 +8,7 @@ public class SceneLoader : MonoBehaviour
     
     public void LoadTransitionScreen()
     {
-        SceneManager.LoadScene("TutorialScene");
+        SceneManager.LoadScene("GameScene" +
+            "");
     }
 }
