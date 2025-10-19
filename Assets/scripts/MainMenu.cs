@@ -5,7 +5,7 @@ public class MainMenu : MonoBehaviour
 {
     public void Play()
     {
-        SceneManager.LoadScene("LoadingScene");
+        SceneManager.LoadScene("TutorialScene");
         Time.timeScale = 1;
     }
 
