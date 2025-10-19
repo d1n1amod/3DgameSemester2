@@ -3,75 +3,33 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
 
-    public enum InteractionType
-    {
-        Gun,
-        Mailbox,
-        Tomato,
-        Gate
-    }
-
-    [Header("Settings")]
-    public InteractionType type;
-
     [Header("UI Message")]
-    public string interactionMessage = "";  // Leave blank for auto message
+    public string interactionMessage = "Press F";
 
     [Header("Panel To Open")]
     public GameObject panelToOpen;   // Assign a UI Panel in Inspector
 
     [Header("Gate Settings")]
     public Animator gateAnimator;    // Assign your gate Animator here
-    public string openAnimationTrigger = "GateOpen";
+    public string openAnimationTrigger = "GateOpen"; // Trigger name in Animator
     private bool gateOpened = false;
 
-    public string GetMessage()
-    {
-        // If message isn't customized, set one based on the type
-        if (string.IsNullOrEmpty(interactionMessage))
-        {
-            switch (type)
-            {
-                case InteractionType.Gun:
-                    return "Press E to pick up gun";
-                case InteractionType.Mailbox:
-                    return "Press F to open mailbox";
-                case InteractionType.Tomato:
-                    return "Press F to inspect tomato";
-                case InteractionType.Gate:
-                    return "Press F to open gate";
-            }
-        }
-        return interactionMessage;
-    }
-
-    // Called by FPController when player interacts
+    // Called by FPController when the player interacts
     public void Interact()
     {
-        switch (type)
+        // If there’s a UI panel, open it
+        if (panelToOpen != null)
         {
-            case InteractionType.Gun:
-                // Handle gun pickup logic here
-                Debug.Log("Picked up gun: " + name);
-                break;
+            panelToOpen.SetActive(true);
+            Debug.Log("Opened panel from: " + name);
+        }
 
-            case InteractionType.Mailbox:
-            case InteractionType.Tomato:
-                if (panelToOpen != null)
-                {
-                    panelToOpen.SetActive(true);
-                    Debug.Log("Opened panel: " + name);
-                }
-                break;
-
-            case InteractionType.Gate:
-                if (gateAnimator != null && !gateOpened)
-                {
-                    gateAnimator.SetTrigger(openAnimationTrigger);
-                    gateOpened = true;
-                    Debug.Log("Gate opened: " + name);
-                }
-                break;
+        // If this is a gate, trigger animation once
+        if (gateAnimator != null && !gateOpened)
+        {
+            gateAnimator.SetTrigger(openAnimationTrigger);
+            gateOpened = true;
+            Debug.Log("Gate opened: " + name);
         }
     }
 }
