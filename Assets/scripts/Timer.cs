@@ -7,46 +7,44 @@ using UnityEngine.SceneManagement;
 public class TimerScript : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI timerText;
-    [SerializeField] float remianingTime;
+    [SerializeField] float remainingTime;
 
     public bool StartTimer;
+    private bool hasWon = false;
 
     void Awake()
     {
-        remianingTime = 70;
-        StartTimer = false; 
-
-      
+        remainingTime = 70;
+        StartTimer = false;
         timerText.gameObject.SetActive(false);
-
         StartCoroutine(StartTimerAfterDelay());
     }
 
     private IEnumerator StartTimerAfterDelay()
     {
-        yield return new WaitForSeconds(60f); 
+        yield return new WaitForSeconds(60f);
         timerText.gameObject.SetActive(true);
         StartTimer = true;
     }
-    public void Update()
+
+    void Update()
     {
-        if (StartTimer)
+        if (StartTimer && !hasWon)
         {
-            if (remianingTime > 0)
+            if (remainingTime > 0)
             {
-                remianingTime -= Time.deltaTime;
+                remainingTime -= Time.deltaTime;
             }
-            else if (remianingTime <= 0)
+            else if (remainingTime <= 0)
             {
-                remianingTime = 0;
-               
+                remainingTime = 0;
                 timerText.color = Color.red;
                 StartTimer = false;
                 StartCoroutine(WaitForDeath());
-
             }
-            int minutes = Mathf.FloorToInt(remianingTime / 60);
-            int seconds = Mathf.FloorToInt(remianingTime % 60);
+
+            int minutes = Mathf.FloorToInt(remainingTime / 60);
+            int seconds = Mathf.FloorToInt(remainingTime % 60);
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
     }
@@ -54,9 +52,26 @@ public class TimerScript : MonoBehaviour
     private IEnumerator WaitForDeath()
     {
         yield return new WaitForSeconds(1f);
-
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadSceneAsync("GameOverScene");
+    }
+
+    //  Called only when all enemies are truly dead
+    public void TriggerGameWin()
+    {
+        if (!hasWon) // Prevent double-triggering
+        {
+            hasWon = true;
+            StartCoroutine(GameWinSequence());
+        }
+    }
+
+    private IEnumerator GameWinSequence()
+    {
+        yield return new WaitForSeconds(1f);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        SceneManager.LoadSceneAsync("GameWinScene");
     }
 }

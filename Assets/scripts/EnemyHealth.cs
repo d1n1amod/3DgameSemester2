@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 
 public class EnemyHealth : MonoBehaviour
@@ -8,11 +9,21 @@ public class EnemyHealth : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
 
-    public Slider healthBar; 
+    [Header("UI")]
+    public Slider healthBar;
+
+    [Header("Health Bar Smoothness")]
+    public float healthBarSpeed = 2f; // higher = faster
+
+    private float displayedHealth; // for smooth lerp
+
+    public delegate void EnemyDeath();
+    public event EnemyDeath OnEnemyDied;
 
     void Start()
     {
         currentHealth = maxHealth;
+        displayedHealth = maxHealth;
 
         if (healthBar != null)
         {
@@ -21,21 +32,20 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Smoothly update the health bar
+        if (healthBar != null)
+        {
+            displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * healthBarSpeed);
+            healthBar.value = displayedHealth;
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        if (currentHealth < 0) currentHealth = 0;
-
-        Debug.Log("{gameObject.name} took {amount} damage. Health = {currentHealth}");
-
-        if (healthBar != null)
-        {
-            healthBar.value = currentHealth; 
-        }
-        else
-        {
-            Debug.LogWarning("HealthBar is NOT assigned in Inspector!");
-        }
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         if (currentHealth <= 0)
         {
@@ -45,7 +55,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("{gameObject.name} has died!");
+        OnEnemyDied?.Invoke(); // notify the spawner
         Destroy(gameObject);
     }
 }
+
