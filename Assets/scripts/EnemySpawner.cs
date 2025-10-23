@@ -15,6 +15,7 @@ public class EnemySpawner : MonoBehaviour
     public int numberOfEnemies = 4; // total enemies to spawn
 
     private TimerScript timerScript;
+    private AudioSource _audioSource;
     private int aliveEnemies = 0;
     private int spawnedCount = 0; // track how many have been spawned
     private bool allSpawned = false; // track if all enemies have spawned
@@ -22,6 +23,7 @@ public class EnemySpawner : MonoBehaviour
     void Start()
     {
         timerScript = FindObjectOfType<TimerScript>();
+        _audioSource = GetComponent<AudioSource>();
         StartCoroutine(WaitAndSpawnAll());
     }
 
@@ -42,6 +44,8 @@ public class EnemySpawner : MonoBehaviour
             );
 
             GameObject spawnedPig = Instantiate(pigPrefab, randomSpawnPosition, Quaternion.identity);
+            _audioSource.Play();
+            
 
             // Register death callback
             EnemyHealth pigHealth = spawnedPig.GetComponent<EnemyHealth>();
@@ -68,6 +72,7 @@ public class EnemySpawner : MonoBehaviour
             TimerScript timer = FindObjectOfType<TimerScript>();
             if (timer != null)
                 timer.TriggerGameWin();
+            _audioSource.Stop();
         }
     }
 }
