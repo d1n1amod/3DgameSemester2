@@ -145,6 +145,7 @@ public class FPController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
             {
+                Debug.Log("Hit: " + hit.collider.name); // Add this line
                 EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
 
                 if (enemy != null)
@@ -237,13 +238,28 @@ public class FPController : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        if(!context.performed) return;
+        if (!context.performed) return;
 
-        pauseMenu.SetActive(true);
-        Time.timeScale = 0;
+        // Toggle pause on/off
+        bool isPaused = pauseMenu.activeSelf;
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (isPaused)
+        {
+            // Resume game
+            pauseMenu.SetActive(false);
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            // Pause game
+            pauseMenu.SetActive(true);
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
     }
 
 

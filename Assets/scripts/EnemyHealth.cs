@@ -16,6 +16,7 @@ public class EnemyHealth : MonoBehaviour
     public float healthBarSpeed = 2f; // higher = faster
 
     private float displayedHealth; // for smooth lerp
+    private Animator animator;
 
     public delegate void EnemyDeath();
     public event EnemyDeath OnEnemyDied;
@@ -24,12 +25,8 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         displayedHealth = maxHealth;
-
-        if (healthBar != null)
-        {
-            healthBar.maxValue = maxHealth;
-            healthBar.value = maxHealth;
-        }
+        animator = GetComponent<Animator>();
+        
     }
 
     void Update()

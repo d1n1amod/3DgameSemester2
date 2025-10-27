@@ -67,7 +67,16 @@ public class EnemyMovement : MonoBehaviour
         {
             bool isMoving = agent.velocity.magnitude > 0.1f;
             animator.SetBool("isMoving", isMoving);
+
+            // DEBUG: Add these lines temporarily
+            Debug.Log("Velocity: " + agent.velocity.magnitude + ", isMoving: " + isMoving);
+            Debug.Log("Animator isPlaying: " + animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"));
         }
+        else
+        {
+            Debug.LogError("No Animator component found!");
+        }
+    
     }
 
     private IEnumerator RunAwayAndResume()
