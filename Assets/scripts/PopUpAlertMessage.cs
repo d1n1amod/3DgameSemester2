@@ -15,10 +15,16 @@ public class PopUpAlertMessage : MonoBehaviour
     [Tooltip("How fast the text fades in/out")]
     public float fadeSpeed = 2f;
 
+    [Header("Audio Settings")]
+    [Tooltip("How fast the sound fades out")]
+    public float soundFadeOutSpeed = 2f;
+
     [Header("Dependencies")]
     public TimerScript timerScript;
 
     private bool hasShown = false;
+    private AudioSource _audioSource;
+    private float originalVolume;
 
     void Start()
     {
@@ -34,6 +40,12 @@ public class PopUpAlertMessage : MonoBehaviour
         if (timerScript == null)
         {
             timerScript = FindObjectOfType<TimerScript>();
+        }
+
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource != null)
+        {
+            originalVolume = _audioSource.volume;
         }
 
         StartCoroutine(CheckTimerAndShowAlert());
@@ -56,11 +68,15 @@ public class PopUpAlertMessage : MonoBehaviour
 
     IEnumerator ShowAlert()
     {
-        if (alertText == null) yield break;
+        if (alertText == null || _audioSource == null) yield break;
 
-        alertText.text = "ALERT!INTRUDERS DETECTED";
+        alertText.text = "ALERT! INTRUDERS DETECTED";
 
-        // Fade IN
+        // Play sound once at the start of fade-in
+        _audioSource.volume = originalVolume;
+        _audioSource.Play();
+
+        // Fade IN text
         float alpha = 0f;
         while (alpha < 1f)
         {
@@ -69,10 +85,10 @@ public class PopUpAlertMessage : MonoBehaviour
             yield return null;
         }
 
-        // Wait visible
+        // Keep visible for duration
         yield return new WaitForSeconds(displayDuration);
 
-        // Fade OUT
+        // Fade OUT text
         while (alpha > 0f)
         {
             alpha -= Time.deltaTime * fadeSpeed;
@@ -80,8 +96,27 @@ public class PopUpAlertMessage : MonoBehaviour
             yield return null;
         }
 
-        // Hide completely
+        // Hide text completely
         SetTextAlpha(0);
+
+        // Start fading out the sound smoothly
+        yield return StartCoroutine(FadeOutSound());
+    }
+
+    IEnumerator FadeOutSound()
+    {
+        if (_audioSource == null) yield break;
+
+        float startVolume = _audioSource.volume;
+
+        while (_audioSource.volume > 0.01f)
+        {
+            _audioSource.volume -= Time.deltaTime * soundFadeOutSpeed;
+            yield return null;
+        }
+
+        _audioSource.Stop();
+        _audioSource.volume = originalVolume; // reset for next use
     }
 
     void SetTextAlpha(float a)
