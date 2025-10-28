@@ -30,9 +30,10 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(false);
         controlsMenu.SetActive(false);
         Time.timeScale = 1;
+        Debug.Log("Pause has been presed");
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
     }
 
     public void Restart(string sceneName)
