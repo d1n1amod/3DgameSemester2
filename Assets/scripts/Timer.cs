@@ -11,10 +11,15 @@ public class TimerScript : MonoBehaviour
 
     public bool StartTimer;
     private bool hasWon = false;
+    private AudioSource _audioSource;
 
+    void Start()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
     void Awake()
     {
-        remainingTime = 70;
+        remainingTime = 60;
         StartTimer = false;
         timerText.gameObject.SetActive(false);
         StartCoroutine(StartTimerAfterDelay());
@@ -22,7 +27,7 @@ public class TimerScript : MonoBehaviour
 
     private IEnumerator StartTimerAfterDelay()
     {
-        yield return new WaitForSeconds(60f);
+        yield return new WaitForSeconds(45f);
         timerText.gameObject.SetActive(true);
         StartTimer = true;
     }
@@ -41,6 +46,7 @@ public class TimerScript : MonoBehaviour
                 timerText.color = Color.red;
                 StartTimer = false;
                 StartCoroutine(WaitForDeath());
+                _audioSource.Play();
             }
 
             int minutes = Mathf.FloorToInt(remainingTime / 60);
