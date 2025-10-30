@@ -4,21 +4,26 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-
     [Header("Enemy Prefab")]
     [Tooltip("Drag Pig prefab here (the enemy model from Blender)")]
     public GameObject pigPrefab;
 
     [Header("Spawn Settings")]
-    public float spawnDelayBetweenEnemies = 5f; // 5 seconds between each spawn
+    public float spawnDelayBetweenEnemies = 6f;
+    public int numberOfEnemies = 6;
+
+    [Header("Spawn Locations")]
+    [Tooltip("Fixed spawn points — each pig will spawn at a unique one")]
+    public Transform[] spawnPoints;
+
+    [Tooltip("Radius used if no spawn points are given")]
     public float spawnRadius = 15f;
-    public int numberOfEnemies = 4; // total enemies to spawn
 
     private TimerScript timerScript;
     private AudioSource _audioSource;
     private int aliveEnemies = 0;
-    private int spawnedCount = 0; // track how many have been spawned
-    private bool allSpawned = false; // track if all enemies have spawned
+    private int spawnedCount = 0;
+    private bool allSpawned = false;
 
     void Start()
     {
@@ -29,11 +34,40 @@ public class EnemySpawner : MonoBehaviour
 
     IEnumerator WaitAndSpawnAll()
     {
-        // Wait until timer starts
         while (timerScript != null && !timerScript.StartTimer)
             yield return null;
 
-        // Spawn each enemy with a delay, up to numberOfEnemies
+        // Shuffle the spawn points so pigs spawn in random order
+        List<Transform> shuffledPoints = new List<Transform>(spawnPoints);
+        for (int i = 0; i < shuffledPoints.Count; i++)
+        {
+            Transform temp = shuffledPoints[i];
+            int randomIndex = Random.Range(i, shuffledPoints.Count);
+            shuffledPoints[i] = shuffledPoints[randomIndex];
+            shuffledPoints[randomIndex] = temp;
+        }
+
+        // Spawn up to numberOfEnemies or number of spawn points (whichever is smaller)
+        int spawnCount = Mathf.Min(numberOfEnemies, shuffledPoints.Count);
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            Vector3 spawnPosition = shuffledPoints[i].position;
+
+            GameObject spawnedPig = Instantiate(pigPrefab, spawnPosition, Quaternion.identity);
+            _audioSource.Play();
+
+            EnemyHealth pigHealth = spawnedPig.GetComponent<EnemyHealth>();
+            if (pigHealth != null)
+                pigHealth.OnEnemyDied += OnEnemyDeath;
+
+            aliveEnemies++;
+            spawnedCount++;
+
+            yield return new WaitForSeconds(spawnDelayBetweenEnemies);
+        }
+
+        // If there are more enemies than spawn points, spawn remaining ones randomly in the radius
         while (spawnedCount < numberOfEnemies)
         {
             Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
@@ -45,9 +79,7 @@ public class EnemySpawner : MonoBehaviour
 
             GameObject spawnedPig = Instantiate(pigPrefab, randomSpawnPosition, Quaternion.identity);
             _audioSource.Play();
-            
 
-            // Register death callback
             EnemyHealth pigHealth = spawnedPig.GetComponent<EnemyHealth>();
             if (pigHealth != null)
                 pigHealth.OnEnemyDied += OnEnemyDeath;
@@ -55,18 +87,16 @@ public class EnemySpawner : MonoBehaviour
             aliveEnemies++;
             spawnedCount++;
 
-            // Wait before spawning the next enemy
             yield return new WaitForSeconds(spawnDelayBetweenEnemies);
         }
 
-        allSpawned = true; // mark that all enemies have spawned
+        allSpawned = true;
     }
 
     void OnEnemyDeath()
     {
         aliveEnemies--;
 
-        // Trigger game win only if all enemies spawned AND all are dead
         if (allSpawned && aliveEnemies <= 0)
         {
             TimerScript timer = FindObjectOfType<TimerScript>();
