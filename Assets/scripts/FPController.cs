@@ -56,6 +56,8 @@ public class FPController : MonoBehaviour
 
     private Animator animator;
 
+    public GameObject lowPolyPlayer; 
+
 
     private void Awake()
     {
@@ -78,7 +80,8 @@ public class FPController : MonoBehaviour
     private void Start()
     {
         playerInventory = GetComponent<PlayerInventory>();
-        animator = GetComponentInChildren<Animator>(); 
+        animator = GetComponentInChildren<Animator>();
+        //lowPolyPlayer.transform.rotation = Quaternion.Euler(12, 180f, 275);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -271,6 +274,9 @@ public class FPController : MonoBehaviour
         
         float moveMagnitude = new Vector2(moveInput.x, moveInput.y).magnitude;
         animator.SetFloat("Speed", moveMagnitude);
+       // lowPolyPlayer.transform.rotation = Quaternion.Euler(0, 180f, 0);
+
+        //animator.SetFloat("Rotation", 180f);
 
         controller.Move(move * moveSpeed * Time.deltaTime);
 
