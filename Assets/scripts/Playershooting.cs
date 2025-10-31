@@ -3,7 +3,7 @@ using UnityEngine;
 public class Playershooting : MonoBehaviour
 {
     public Camera fpsCam;         
-    public float damage = 20f;    
+    public float damage = 10f;    
     public float range = 100f;    
     public Transform firePoint;     
     public GameObject bulletPrefab; 
@@ -29,7 +29,7 @@ public class Playershooting : MonoBehaviour
 
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
+                // Remove this entirely, the bullet applies damage itself
             }
         }
     }

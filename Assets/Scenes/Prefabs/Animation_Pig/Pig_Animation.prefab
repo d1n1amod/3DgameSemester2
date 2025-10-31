@@ -381,9 +381,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 252c9317878297d44ba0ee0f605c6e26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 130
   healthBar: {fileID: 3809301241599392739}
-  healthBarSpeed: 2
+  healthBarSpeed: 0.8
 --- !u!114 &6902899652945219367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b7f4d04797750845bfd3f35ef28ea01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: -8679921383154817045, guid: 1ac760f550e80a44992311a4908466e3, type: 3}
   detectionRadius: 30
   runDistance: 20
   wanderRadius: 20

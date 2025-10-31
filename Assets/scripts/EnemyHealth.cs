@@ -6,14 +6,14 @@ using System;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public float maxHealth = 100f;
+    public float maxHealth = 130f;
     private float currentHealth;
 
     [Header("UI")]
     public Slider healthBar;
 
     [Header("Health Bar Smoothness")]
-    public float healthBarSpeed = 2f; // higher = faster
+    public float healthBarSpeed = 0.8f; // higher = faster
 
     private float displayedHealth; // for smooth lerp
     private Animator animator;
