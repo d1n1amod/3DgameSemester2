@@ -17,6 +17,7 @@ public class Bullet : MonoBehaviour
         if (enemy == null)
         {
             enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
+
         }
 
         if (enemy != null)

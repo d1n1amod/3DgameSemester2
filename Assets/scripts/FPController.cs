@@ -22,6 +22,7 @@ public class FPController : MonoBehaviour
     public float range = 100f;    
     public Transform shootPoint;     
     public float bulletForce = 50f;
+    private AudioSource _audioSource;
 
     private PlayerInventory playerInventory;
 
@@ -82,6 +83,7 @@ public class FPController : MonoBehaviour
         playerInventory = GetComponent<PlayerInventory>();
         animator = GetComponentInChildren<Animator>();
         //lowPolyPlayer.transform.rotation = Quaternion.Euler(12, 180f, 275);
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -132,6 +134,7 @@ public class FPController : MonoBehaviour
         if (context.performed)
         {
             Shoot();
+            _audioSource.Play();
         }
     }
 
