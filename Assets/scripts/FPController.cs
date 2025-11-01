@@ -6,14 +6,26 @@ public class FPController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
+    public float runSpeed = 50f;
     public float gravity = -9.81f;
     public float jumpHeight = 1.5f;
 
+    private bool isRunning = false;
+    private float currentSpeed;
 
     [Header("Look Settings")]
     public Transform cameraTransform;
     public float lookSensitivity = 2f;
     public float verticalLookLimit = 90f;
+
+    [Header("Camera FOV Settings")]
+    public Camera playerCamera;
+    public float normalFOV = 60f;
+    public float runFOV = 70f;  // increase for zoom-out effect, decrease for zoom-in
+    public float fovChangeSpeed = 5f;
+
+    [Header("Run FX Settings")]
+    public ParticleSystem speedLinesPS;
 
     [Header("Shooting")]
     public GameObject bulletPrefab;
@@ -76,6 +88,8 @@ public class FPController : MonoBehaviour
         {
             heldObject.MoveToHoldPoint(holdPoint.position);
         }
+
+        HandleFOV();
     }
 
     private void Start()
@@ -115,6 +129,19 @@ public class FPController : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();
     }
+
+    public void OnRun(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isRunning = true;
+        }
+        else if (context.canceled)
+        {
+            isRunning = false;
+        }
+    }
+
     public void OnLook(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
@@ -274,14 +301,18 @@ public class FPController : MonoBehaviour
     {
         Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-        
+        // Select speed (run or walk)
+        currentSpeed = isRunning ? runSpeed : moveSpeed;
+        HandleRunFX();
+
+        // Move character
+        controller.Move(move * currentSpeed * Time.deltaTime);
+
         float moveMagnitude = new Vector2(moveInput.x, moveInput.y).magnitude;
-        animator.SetFloat("Speed", moveMagnitude);
+        animator.SetFloat("Speed", moveMagnitude * (isRunning ? 2f : 1f));
        // lowPolyPlayer.transform.rotation = Quaternion.Euler(0, 180f, 0);
 
         //animator.SetFloat("Rotation", 180f);
-
-        controller.Move(move * moveSpeed * Time.deltaTime);
 
         if (controller.isGrounded && velocity.y < 0)
             velocity.y = -2f;
@@ -300,5 +331,35 @@ public class FPController : MonoBehaviour
         verticalLookLimit);
         cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
+    }
+
+    private void HandleFOV()
+    {
+        if (playerCamera == null) return;
+
+        float targetFOV = isRunning ? runFOV : normalFOV;
+
+        // Smoothly interpolate between FOVs
+        playerCamera.fieldOfView = Mathf.Lerp(
+            playerCamera.fieldOfView,
+            targetFOV,
+            Time.deltaTime * fovChangeSpeed
+        );
+    }
+
+    private void HandleRunFX()
+    {
+        if (speedLinesPS == null) return;
+
+        bool shouldPlayFX = isRunning && controller.velocity.magnitude > 0.1f && controller.isGrounded;
+
+        if (shouldPlayFX && !speedLinesPS.isPlaying)
+        {
+            speedLinesPS.Play();
+        }
+        else if (!shouldPlayFX && speedLinesPS.isPlaying)
+        {
+            speedLinesPS.Stop();
+        }
     }
 } 

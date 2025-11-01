@@ -66,8 +66,10 @@ public class PauseMenu : MonoBehaviour
 
     public void Controls()
     {
+        pauseMenu.SetActive(false);
         controlsMenu.SetActive(true);
         Time.timeScale = 0f;
+        isPaused = true;
     }
 
     public void Restart(string sceneName)
