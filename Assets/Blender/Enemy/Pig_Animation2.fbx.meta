@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 67ce51e387137ff4ea1a6cf02a5a3e4c
+guid: e0162f5d81d9d874180c7bf7aa1aaf4d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -60,9 +60,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|ArmatureAction
-      takeName: Armature|ArmatureAction
-      internalID: 4781951162920444690
+      name: Armature|Damage
+      takeName: Armature|Damage
+      internalID: -6788532455012819382
       firstFrame: 0
       lastFrame: 99
       wrapMode: 0
@@ -89,11 +89,40 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Low Poly.001Action.001
-      takeName: Armature|Low Poly.001Action.001
-      internalID: 8266168449341584682
+      name: Armature|Eating
+      takeName: Armature|Eating
+      internalID: -3715609151880130241
       firstFrame: 0
       lastFrame: 0
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Walking
+      takeName: Armature|Walking
+      internalID: -4274770991410265338
+      firstFrame: 0
+      lastFrame: 99
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

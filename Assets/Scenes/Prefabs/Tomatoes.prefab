@@ -88,6 +88,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tomatoes
       objectReference: {fileID: 0}
+    - target: {fileID: 2886378855461693253, guid: 68e0237b306099847b388d586693ee9f, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 7849714200538148067, guid: 68e0237b306099847b388d586693ee9f, type: 3}
