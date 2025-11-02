@@ -18,6 +18,13 @@ public class EnemyHealth : MonoBehaviour
     private float displayedHealth; // for smooth lerp
     private Animator animator;
 
+    [Header("Blood Effect")]
+    [Tooltip("Assign the blood particle prefab here.")]
+    public GameObject bloodEffectPrefab;
+    [Tooltip("Offset for blood spawn position relative to pig's body.")]
+    public Vector3 bloodOffset = new Vector3(0, 1.0f, 0);
+
+
     public delegate void EnemyDeath();
     public event EnemyDeath OnEnemyDied;
 
@@ -44,7 +51,19 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        if (currentHealth <= 0)
+        if (bloodEffectPrefab != null)
+        {
+            GameObject bloodFX = Instantiate(
+                bloodEffectPrefab,
+                transform.position + bloodOffset,
+                Quaternion.identity
+            );
+
+            // Optionally parent to the pig so it moves with it
+            bloodFX.transform.SetParent(transform);
+        }
+
+            if (currentHealth <= 0)
         {
             Die();
         }

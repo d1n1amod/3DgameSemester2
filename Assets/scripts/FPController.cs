@@ -13,6 +13,9 @@ public class FPController : MonoBehaviour
     private bool isRunning = false;
     private float currentSpeed;
 
+    public ParticleSystem dashEffectPrefab;   // assign your particle prefab in Inspector
+    private ParticleSystem activeDashEffect;
+
     [Header("Look Settings")]
     public Transform cameraTransform;
     public float lookSensitivity = 2f;
@@ -24,15 +27,12 @@ public class FPController : MonoBehaviour
     public float runFOV = 70f;  // increase for zoom-out effect, decrease for zoom-in
     public float fovChangeSpeed = 5f;
 
-    [Header("Run FX Settings")]
-    public ParticleSystem speedLinesPS;
-
     [Header("Shooting")]
     public GameObject bulletPrefab;
-    public Camera fpsCam;         
-    public float damage = 10f;    
-    public float range = 100f;    
-    public Transform shootPoint;     
+    public Camera fpsCam;
+    public float damage = 10f;
+    public float range = 100f;
+    public Transform shootPoint;
     public float bulletForce = 50f;
     private AudioSource _audioSource;
 
@@ -69,7 +69,7 @@ public class FPController : MonoBehaviour
 
     private Animator animator;
 
-    public GameObject lowPolyPlayer; 
+    public GameObject lowPolyPlayer;
 
 
     private void Awake()
@@ -157,7 +157,7 @@ public class FPController : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if (!hasGun) return; 
+        if (!hasGun) return;
         if (context.performed)
         {
             Shoot();
@@ -169,12 +169,12 @@ public class FPController : MonoBehaviour
     {
         if (playerInventory != null && playerInventory.UseBullet())
         {
-            
+
             GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             rb.AddForce(shootPoint.forward * bulletForce, ForceMode.Impulse);
 
-            
+
             RaycastHit hit;
             if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
             {
@@ -200,7 +200,7 @@ public class FPController : MonoBehaviour
         gunObject.transform.localPosition = Vector3.zero;
         gunObject.transform.localRotation = Quaternion.identity;
 
-        
+
         if (gunObject.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
             rb.isKinematic = true;
@@ -221,9 +221,9 @@ public class FPController : MonoBehaviour
             moveSpeed = crouchSpeed;
         }
         else if (context.performed)
-        { 
-           controller.height = crouchHeight;
-           moveSpeed = originalMoveSpeed;
+        {
+            controller.height = crouchHeight;
+            moveSpeed = originalMoveSpeed;
         }
     }
 
@@ -232,7 +232,7 @@ public class FPController : MonoBehaviour
         if (!context.performed || hasGun) return;
 
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, pickupRange, ~LayerMask.GetMask("Player"))) 
+        if (Physics.Raycast(ray, out RaycastHit hit, pickupRange, ~LayerMask.GetMask("Player")))
         {
             Debug.Log("Hit: " + hit.collider.name);
 
@@ -303,14 +303,14 @@ public class FPController : MonoBehaviour
 
         // Select speed (run or walk)
         currentSpeed = isRunning ? runSpeed : moveSpeed;
-        HandleRunFX();
+        HandleDashEffect();
 
         // Move character
         controller.Move(move * currentSpeed * Time.deltaTime);
 
         float moveMagnitude = new Vector2(moveInput.x, moveInput.y).magnitude;
         animator.SetFloat("Speed", moveMagnitude * (isRunning ? 2f : 1f));
-       // lowPolyPlayer.transform.rotation = Quaternion.Euler(0, 180f, 0);
+        // lowPolyPlayer.transform.rotation = Quaternion.Euler(0, 180f, 0);
 
         //animator.SetFloat("Rotation", 180f);
 
@@ -347,19 +347,26 @@ public class FPController : MonoBehaviour
         );
     }
 
-    private void HandleRunFX()
+    private void HandleDashEffect()
     {
-        if (speedLinesPS == null) return;
+        if (dashEffectPrefab == null) return;
 
-        bool shouldPlayFX = isRunning && controller.velocity.magnitude > 0.1f && controller.isGrounded;
-
-        if (shouldPlayFX && !speedLinesPS.isPlaying)
+        // If running and no active effect -> spawn it
+        if (isRunning && activeDashEffect == null)
         {
-            speedLinesPS.Play();
+            // Spawn the particle effect near the camera
+            activeDashEffect = Instantiate(dashEffectPrefab, playerCamera.transform);
+            activeDashEffect.transform.localPosition = Vector3.zero; // center on camera
+            activeDashEffect.transform.localRotation = Quaternion.identity;
+            activeDashEffect.Play();
         }
-        else if (!shouldPlayFX && speedLinesPS.isPlaying)
+        // If stopped running -> stop and destroy effect
+        else if (!isRunning && activeDashEffect != null)
         {
-            speedLinesPS.Stop();
+            activeDashEffect.Stop();
+            Destroy(activeDashEffect.gameObject, 1f); // give it a second to fade
+            activeDashEffect = null;
         }
     }
-} 
+
+}
