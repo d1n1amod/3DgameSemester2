@@ -4,6 +4,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 public class FPController : MonoBehaviour
 {
+    [Header("Footstep Settings")]
+    [SerializeField] private AudioSource footstepAudio;  // Drag your footstep AudioSource here
+    [SerializeField] private float footstepDelay = 0.4f; // Adjust timing between steps
+    private float footstepTimer;
+
     [Header("Movement Settings")]
     public float moveSpeed = 10f;
     public float runSpeed = 50f;
@@ -90,6 +95,7 @@ public class FPController : MonoBehaviour
         }
 
         HandleFOV();
+        HandleFootsteps();
     }
 
     private void Start()
@@ -99,7 +105,35 @@ public class FPController : MonoBehaviour
         //lowPolyPlayer.transform.rotation = Quaternion.Euler(12, 180f, 275);
         _audioSource = GetComponent<AudioSource>();
     }
+    private void HandleFootsteps()
+    {
+        // Only play footsteps if grounded and actually moving
+        bool isMoving = moveInput.magnitude > 0.1f && controller.isGrounded;
 
+        if (isMoving)
+        {
+            footstepTimer -= Time.deltaTime;
+
+            // Only play next step when timer runs out
+            if (footstepTimer <= 0f)
+            {
+                if (footstepAudio != null)
+                {
+                    footstepAudio.Play();
+                }
+                // Reset the delay (faster when running)
+                footstepTimer = isRunning ? footstepDelay / 1.5f : footstepDelay;
+            }
+        }
+        else
+        {
+            // Stop footsteps if the player is standing still
+            if (footstepAudio != null && footstepAudio.isPlaying)
+            {
+                footstepAudio.Stop();
+            }
+        }
+    }
     private void OnTriggerEnter(Collider other)
     {
         var interactable = other.GetComponent<Interactable>();

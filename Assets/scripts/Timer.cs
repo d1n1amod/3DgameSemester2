@@ -19,7 +19,7 @@ public class TimerScript : MonoBehaviour
     }
     void Awake()
     {
-        remainingTime = 60;
+        remainingTime = 75;
         StartTimer = false;
         timerText.gameObject.SetActive(false);
         StartCoroutine(StartTimerAfterDelay());
@@ -27,7 +27,7 @@ public class TimerScript : MonoBehaviour
 
     private IEnumerator StartTimerAfterDelay()
     {
-        yield return new WaitForSeconds(45f);
+        yield return new WaitForSeconds(60f);
         timerText.gameObject.SetActive(true);
         StartTimer = true;
     }

@@ -6,7 +6,7 @@ using System;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public float maxHealth = 130f;
+    public float maxHealth = 150f;
     private float currentHealth;
 
     [Header("UI")]
