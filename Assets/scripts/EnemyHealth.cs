@@ -59,8 +59,9 @@ public class EnemyHealth : MonoBehaviour
                 Quaternion.identity
             );
 
-            // Optionally parent to the pig so it moves with it
-            bloodFX.transform.SetParent(transform);
+            ParticleSystem ps = bloodFX.GetComponent<ParticleSystem>();
+            if (ps != null)
+                ps.Play();
         }
 
             if (currentHealth <= 0)
