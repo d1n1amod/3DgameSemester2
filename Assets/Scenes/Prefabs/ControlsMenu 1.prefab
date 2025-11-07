@@ -828,7 +828,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Pick-Up
+  m_text: 'interact
+
 
 '
   m_isRightToLeft: 0
@@ -1285,7 +1286,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Interact
+  m_text: pick-up
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: daac46d0393b2364bb15b13ac92602db, type: 2}
   m_sharedMaterial: {fileID: 2454776748517128272, guid: daac46d0393b2364bb15b13ac92602db, type: 2}
